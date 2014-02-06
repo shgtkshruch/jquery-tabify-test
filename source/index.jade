@@ -1,0 +1,18 @@
+extend ./layout/layout.jade
+
+block  mainVars
+  - title = index.title
+  - author = 'author'
+  - description = 'description'
+  - keywords = 'keywords'
+  - page_class = 'top'
+block content
+  .tabset
+    .tabs
+      each tabset in index.tabset
+        a(href="#{tabset.a}" class="tab")=tabset.p
+    .tabcontentwrapper
+      each t in index.tabbody
+        div(id="#{t.id}" class="#{t.class}")!=t.p
+
+

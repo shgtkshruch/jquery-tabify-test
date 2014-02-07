@@ -21,7 +21,7 @@ h1 {
   margin: 0 3px 0 0;
 }
 .tabset .tabs .tab-active {
-  position: relative;
+  border-color: #f00;
 }
 .tabset .tabcontentdiv {
   border: 3px solid #000;

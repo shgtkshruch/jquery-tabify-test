@@ -10,7 +10,7 @@ block content
   .tabset
     .tabs
       each tabset in index.tabset
-        a(href="#{tabset.a}" class="tab")=tabset.p
+        a(href="#{tabset.a}" class="#{tabset.class}" )=tabset.p
     .tabcontentwrapper
       each t in index.tabbody
         div(id="#{t.id}" class="#{t.class}")!=t.p

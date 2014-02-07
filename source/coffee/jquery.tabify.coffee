@@ -4,19 +4,10 @@ Licensed under the MIT license.
 ###
 
 do ($ = jQuery, window = window, document = document) ->
-  ns = {}
-  # Tab
-  class ns.Tab
-    @defaults =
-      # selectores related to the container
+  class Tab
+    @defaults = 
       selector_tab: '.tab'
-      selector_contentwrapper: '.tabcontentwrapper' # necessary if you use fade
-      selector_content: '.tabcontentdiv'
-
-      # visual control classNames
-      tab_activeClass: null # 'tab-active'
-      content_activeClass: null # 'tabcontentdiv-active'
-
+  
     constructor: (@$el, options) ->
       @options = $.extend {}, @defaults, options
       @_eventify()
@@ -27,36 +18,36 @@ do ($ = jQuery, window = window, document = document) ->
         @switchFromOpener $(e.currentTarget)
 
     switchFromOpener: ($opener) ->
-      $lastContentEl = @$lastContentEl or do =>
-        @$lastContentEl = @$el.find ".#{@options.content_activeClass}"
+      $lastContentEl = @$lastContentEl or @$el.find ".#{@options.content_activeClass}"
       $nextContentEl = @getRelatedContentEl $opener
+      $lastTabEl = @$lastTabEl or @$el.find ".#{@options.tab_activeClass}"
+      $nextTabEl = $opener
 
-      # swirch contents
+      # switch contents
       @disableContentEl $lastContentEl
-      @$lastContentEl = $nextContentEl
       @activateContentEl $nextContentEl
 
-      # swtich tab
-      @disableActiveTab()
-      @activateTab $opener
+      # switch tabs
+      @disableTabEl $lastTabEl 
+      @activateTabEl $nextTabEl
 
-    # content element handlers
-    activateContentEl: ($nextContentEl) ->
-      $nextContentEl.addClass @options.content_activeClass
+      # change last element
+      @$lastContentEl = $nextContentEl
+      @$lastTabEl = $nextTabEl
 
+    # helper
     disableContentEl: ($lastContentEl) ->
       $lastContentEl.removeClass @options.content_activeClass
 
-    # tab element handlers
-    activateTab: ($opener) ->
-      $opener.addClass @options.tab_activeClass
-      @$lastTab = $opener
+    activateContentEl: ($nextContentEl) ->
+      $nextContentEl.addClass @options.content_activeClass
 
-    disableActiveTab: ->
-      $tab = $(@options.selector_tab)
-      $tab.removeClass @options.tab_activeClass
+    disableTabEl: ($lastTabEl) ->
+      $lastTabEl.removeClass @options.tab_activeClass
 
-    # helpers
+    activateTabEl: ($nextTabEl) ->
+      $nextTabEl.addClass @options.tab_activeClass
+
     getRelatedContentEl: ($opener) ->
       href = $opener.attr 'href'
       @$el.find href
@@ -65,4 +56,4 @@ do ($ = jQuery, window = window, document = document) ->
   $.fn.tabify = (options) ->
     @each ->
       $el = $(@)
-      tab = new ns.Tab $el, options
+      tab = new Tab $el, options

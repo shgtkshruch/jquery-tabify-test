@@ -7,6 +7,10 @@ do ($ = jQuery, window = window, document = document) ->
   class Tab
     @defaults = 
       selector_tab: '.tab'
+
+      # Fade
+      useFade: false
+      fadeDuration: 400
   
     constructor: (@$el, options) ->
       @options = $.extend {}, @defaults, options
@@ -31,16 +35,32 @@ do ($ = jQuery, window = window, document = document) ->
       @disableTabEl $lastTabEl 
       @activateTabEl $nextTabEl
 
-      # change last element
+      # save next as last
       @$lastContentEl = $nextContentEl
       @$lastTabEl = $nextTabEl
 
     # helper
     disableContentEl: ($lastContentEl) ->
-      $lastContentEl.removeClass @options.content_activeClass
+      cls = @options.content_activeClass
+      callback = =>
+        $lastContentEl.removeClass cls
+
+      if @options.useFade
+        d = @options.fadeDuration
+        $lastContentEl.transition {opacity: 0}, d, callback
+      else
+        callback()
 
     activateContentEl: ($nextContentEl) ->
-      $nextContentEl.addClass @options.content_activeClass
+      cls = @options.content_activeClass
+      callback = =>
+        $nextContentEl.addClass cls
+
+      if @options.useFade
+        d = @options.fadeDuration
+        $nextContentEl.transition {opacity: 1}, d, callback
+      else
+        callback()
 
     disableTabEl: ($lastTabEl) ->
       $lastTabEl.removeClass @options.tab_activeClass

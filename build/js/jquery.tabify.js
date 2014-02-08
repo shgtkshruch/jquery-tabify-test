@@ -1,20 +1,17 @@
+
 /*
 Copyright (c) 2013 "Takazudo" Takeshi Takatsudo
 Licensed under the MIT license.
-*/
-
+ */
 
 (function() {
   (function($, window, document) {
-    var ns;
-    ns = {};
-    ns.Tab = (function() {
+    var Tab;
+    Tab = (function() {
       Tab.defaults = {
         selector_tab: '.tab',
-        selector_contentwrapper: '.tabcontentwrapper',
-        selector_content: '.tabcontentdiv',
-        tab_activeClass: null,
-        content_activeClass: null
+        useFade: false,
+        fadeDuration: 400
       };
 
       function Tab($el, options) {
@@ -24,44 +21,70 @@ Licensed under the MIT license.
       }
 
       Tab.prototype._eventify = function() {
-        var _this = this;
-        return this.$el.on('click', this.options.selector_tab, function(e) {
-          e.preventDefault();
-          return _this.switchFromOpener($(e.currentTarget));
-        });
+        return this.$el.on('click', this.options.selector_tab, (function(_this) {
+          return function(e) {
+            e.preventDefault();
+            return _this.switchFromOpener($(e.currentTarget));
+          };
+        })(this));
       };
 
       Tab.prototype.switchFromOpener = function($opener) {
-        var $lastContentEl, $nextContentEl,
-          _this = this;
-        $lastContentEl = this.$lastContentEl || (function() {
-          return _this.$lastContentEl = _this.$el.find("." + _this.options.content_activeClass);
-        })();
+        var $lastContentEl, $lastTabEl, $nextContentEl, $nextTabEl;
+        $lastContentEl = this.$lastContentEl || this.$el.find("." + this.options.content_activeClass);
         $nextContentEl = this.getRelatedContentEl($opener);
+        $lastTabEl = this.$lastTabEl || this.$el.find("." + this.options.tab_activeClass);
+        $nextTabEl = $opener;
         this.disableContentEl($lastContentEl);
-        this.$lastContentEl = $nextContentEl;
         this.activateContentEl($nextContentEl);
-        this.disableActiveTab();
-        return this.activateTab($opener);
-      };
-
-      Tab.prototype.activateContentEl = function($nextContentEl) {
-        return $nextContentEl.addClass(this.options.content_activeClass);
+        this.disableTabEl($lastTabEl);
+        this.activateTabEl($nextTabEl);
+        this.$lastContentEl = $nextContentEl;
+        return this.$lastTabEl = $nextTabEl;
       };
 
       Tab.prototype.disableContentEl = function($lastContentEl) {
-        return $lastContentEl.removeClass(this.options.content_activeClass);
+        var callback, cls, d;
+        cls = this.options.content_activeClass;
+        callback = (function(_this) {
+          return function() {
+            return $lastContentEl.removeClass(cls);
+          };
+        })(this);
+        if (this.options.useFade) {
+          d = this.options.fadeDuration;
+          return $lastContentEl.transition({
+            opacity: 0
+          }, d, callback);
+        } else {
+          return callback();
+        }
       };
 
-      Tab.prototype.activateTab = function($opener) {
-        $opener.addClass(this.options.tab_activeClass);
-        return this.$lastTab = $opener;
+      Tab.prototype.activateContentEl = function($nextContentEl) {
+        var callback, cls, d;
+        cls = this.options.content_activeClass;
+        callback = (function(_this) {
+          return function() {
+            return $nextContentEl.addClass(cls);
+          };
+        })(this);
+        if (this.options.useFade) {
+          d = this.options.fadeDuration;
+          return $nextContentEl.transition({
+            opacity: 1
+          }, d, callback);
+        } else {
+          return callback();
+        }
       };
 
-      Tab.prototype.disableActiveTab = function() {
-        var $tab;
-        $tab = $(this.options.selector_tab);
-        return $tab.removeClass(this.options.tab_activeClass);
+      Tab.prototype.disableTabEl = function($lastTabEl) {
+        return $lastTabEl.removeClass(this.options.tab_activeClass);
+      };
+
+      Tab.prototype.activateTabEl = function($nextTabEl) {
+        return $nextTabEl.addClass(this.options.tab_activeClass);
       };
 
       Tab.prototype.getRelatedContentEl = function($opener) {
@@ -77,7 +100,7 @@ Licensed under the MIT license.
       return this.each(function() {
         var $el, tab;
         $el = $(this);
-        return tab = new ns.Tab($el, options);
+        return tab = new Tab($el, options);
       });
     };
   })(jQuery, window, document);

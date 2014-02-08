@@ -5,4 +5,6 @@ $ ->
     selector_contet: '.tabcontentdiv'
     tab_activeClass: 'tab-active'
     content_activeClass: 'tabcontentdiv-active'
+    useFade: true
+    fadeDuration: 400
   }
